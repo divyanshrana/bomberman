@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+        <style>
+            #head{
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+                margin-left: 20%;
+                margin-right: 20%;
+                padding: 15px;
+
+            }
+            header{
+                display: flex;
+                color: white;
+            }
+            #scoreBoard{
+                display: flex;
+                font-size: 28px;
+                color: white;
+            }
+
+            body{
+                flex-direction: row;
+                font-family: 'Metal Mania', cursive;
+                background-color: black;
+            }
+            table{
+                display: flex;
+                justify-content: center;
+                flex-flow: column;
+                align-items: center;
+            }
+            td{
+                border: 2px solid black;
+                background-color: #12947f;
+                text-align: center;
+                height: 8vh;
+                width: 8vh;
+                font-size: 28px;
+                border-radius: 20%;
+                 
+            }
+            td:hover{
+                cursor: pointer;
+                background-color: mediumaquamarine;   
+            }
+            .popup {
+                display: none; 
+                position: fixed; 
+                z-index: 1; 
+                padding-top: 100px; 
+                left: 0;
+                top: 0;
+                width: 100%; 
+                height: 100%; 
+                overflow: auto;
+                background-color: black;
+                color: white;
+                background-color: rgba(0,0,0,0.4);
+
+
+            }
+
+            #popup-content{
+                display: flex;
+                flex-flow: column;
+                padding: 30px;
+                background: white;
+                align-items: center;
+                border: 2px double black;
+                border-radius: 5px;
+                color:black;
+                margin-left: 20%;
+                margin-right: 20%;
+            }
+            #restart{
+                font-size: 36px;
+            }
+            #popup-board{
+                font-family: 'Metal Mania', cursive;               
+                font-size: 36px;
+                border-radius: 20%;
+
+            }
+            #won{
+                background-color: greenyellow;
+                color: black;
+                font-size: 30px;
+            }
+            
+
+        </style>
+
+    </head>
+    <body class="container-fluid">
+        <div id='head'>
+            <header id='header'><h1>Bomberman</h1></header>
+        </div>
+        <div id="popup" class="popup">
+            <div id="popup-content">
+
+                <button id="restart" onclick="restart()">Restart</button>
+                <img src="https://webstockreview.net/images/boom-clipart-gif-animation.gif" width="50vw" height="50vw">
+            </div>
+        </div>
+
+
+        <script>
+            function randomnumber(min,max){
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+            var points=0;
+            //let arr=[26,36,38,32,37,18,17,21,39,59]; //should not have multiples of 10
+            let arr = [];
+            for(let i=0;i<10;i++){
+                arr[i]=randomnumber(1,89);
+            }
+            for(let i=0;i<arr.length;i++){
+                if(arr[i]%10==0){
+                    arr[i]=arr[i]-1;
+                }
+            }
+            const checkBomb=(id)=>{
+                if(document.getElementById(id).style.background=="mediumaquamarine"){
+                    return;
+                }
+                for(var y=0; y<arr.length; y++){
+                    if(arr[y]==id){
+                        explode();
+                        document.getElementById(id).style.fontSize="32px";
+                        return;
+                    }
+                }
+                document.getElementById(id).style.background="mediumaquamarine";
+                var countbombs=countbombsaround(id);
+                document.getElementById(id).innerHTML=countbombs;
+                document.getElementById(id).style.color="black";
+                updatePoints();
+                if(points>=71){
+                    congratulate();
+                }
+            }
+            
+            const countbombsaround=(id) =>{
+                let count=0;
+                if(id==1){
+
+                    if(arr.indexOf(2)>-1){
+                        count++;
+                    }
+                    if(arr.indexOf(12)>-1){
+                        count++;
+                    }
+                    if(arr.indexOf(11)>-1){
+                        count++;
+                    }
+                }
+                else if(id==9){
+
+                    if(arr.indexOf(8)>-1){
+                        count++;
+                    }
+                    if(arr.indexOf(18)>-1){
+                        count++;
+                    }
+                    if(arr.indexOf(19)>-1){
+                        count++;
+                    }
+                }
+                else if(id==81){
+                    if(arr.indexOf(71)>-1){
+                        count++;
+                    }
+                    if(arr.indexOf(72)>-1){
+                        count++;
+                    }
+                    if(arr.indexOf(82)>-1){
+                        count++;
+                    }
+                }
+                else if(id==89){
+
+                    if(arr.indexOf(79)>-1){
+                        count++;
+                    }
+                    if(arr.indexOf(78)>-1){
+                        count++;
+                    }
+                    if(arr.indexOf(88)>-1){
+                        count++;
+                    }
+                }
+                else if(id<=9){
+                    id=id-1;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id+10;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id+1;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id+1;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id-10;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                }
+                else if(id%10==1){
+                    id=id-10;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id+1;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id+10;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id+10;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id-1;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                }
+                else if(id%10==9){
+                    id=id-10;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id-1;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id+10;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id+10;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id+1;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                }
+                else if(id>=81){
+                    id=id-1;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id-10;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id+1;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id+1;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id+10;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                }
+                else{
+                    id=id-1;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id-10;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id+1;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id+1;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id+10;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id+10;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id-1;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+                    id=id-1;
+                    if(arr.indexOf(id)>-1){
+                        count++;
+                    }
+
+                }
+                return count;
+            }
+            /*
+             1  2  3  4  5  6  7  8  9
+            11 12 13 14 15 16 17 18 19
+            21 22 23 24 25 26 27 28 29
+            31 32 33 34 35 36 37 38 39
+            41 42 43 44 45 46 47 48 49
+            */
+            const updatePoints=() =>{
+                points++;
+                document.getElementById('scoreBoard').innerHTML="Score: "+points;
+
+            }
+            const explode=() =>{
+                for(var i=0;i<arr.length; i++){
+                    document.getElementById(arr[i]).style.background= "#e71414";
+                    document.getElementById(arr[i]).innerHTML="💣";
+                    document.getElementById(arr[i]).style.fontSize="20px";
+                }
+                setTimeout( function(){
+                    dispopscore();
+                    popup.style.display="block";
+                },2500);
+            }
+            const congratulate=()=>{
+                var won=document.createElement("div");
+                won.setAttribute("id",'won');
+                won.textContent="Congratulations you won the game";
+                document.getElementById("popup-content").appendChild(won);
+                popup.style.display="block";
+            }
+            const restart=() => {
+                //location.reload();
+                window.location.href=window.location.href
+            }
+
+            var popup=document.getElementById('popup');
+
+            var board= document.createElement("div");
+            board.setAttribute('id','scoreBoard');
+            board.textContent="Score: "+points;
+            document.getElementById('head').appendChild(board);
+
+            const dispopscore=()=> {
+                var popupboard=document.createElement("div");
+                popupboard.setAttribute('id',"popup-board");
+                popupboard.textContent="You Scored: "+points+" points";
+                document.getElementById("popup-content").appendChild(popupboard);
+
+            }
+            const addq=(ev,id)=>{
+                ev.preventDefault();
+                if(ev.button==2){
+                    document.getElementById(id).innerHTML="🚩";
+                    document.getElementById(id).style.color="#d92027";
+                }
+                return false;
+            }
+
+            var tab= document.createElement("TABLE");
+            tab.setAttribute('id','myTable');
+            document.body.appendChild(tab);
+
+            var idcounter=1;
+            
+            for(var i=1;i<=9;i++){
+                var trow= document.createElement("TR");
+                trow.setAttribute('id','r'+i);
+                document.getElementById('myTable').appendChild(trow);
+                for(var y=1;y<=9;y++){
+                    var tdata= document.createElement("TD");
+                    tdata.setAttribute('id',idcounter);
+                    tdata.classList.add("box");
+                    idcounter++;
+                    tdata.addEventListener('contextmenu', function(ev){
+                        addq(ev,this.id);
+                    },false);
+
+                    tdata.addEventListener("click", function(){
+                        checkBomb(this.id);
+                    },false);
+
+                    document.getElementById('r'+i).appendChild(tdata);
+
+                }
+                idcounter++;
+            }
+
+        </script>
+    </body>
+</html>
